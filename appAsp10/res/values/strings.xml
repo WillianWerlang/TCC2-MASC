@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">appAsp</string>
+    <string name="r_nome">Nome:</string>
+    <string name="r_email">E-mail:</string>
+    <string name="r_emailInicio">E-mail:</string>
+    <string name="r_senha">Senha:</string>
+    <string name="r_enviar">Enviar</string>
+    <string name="r_entrar">Entrar</string>
+    <string name="r_entrarvisitante">Entrar como visitante</string>
+    <string name="r_cadastrar">Cadastrar</string>
+    <string name="r_listarRecursos">Listar Recursos</string>
+    <string name="r_visualizarRotas">Visualizar Rotas</string>
+    <string name="r_visualizarRotasRuas">Visualizar Rotas Ruas</string>
+    <string name="r_mapas">Mapas</string>
+    <string name="r_yes">sim</string>
+    <string name="r_no">não</string>
+    <string name="r_q">Questão</string>
+    <string name="r_posicaoAtual">Mostra Posição Atual</string>
+    
+    
+    <string name="r_senhaRepita">Repita a Senha:</string>
+    <string name="action_settings">Configurações</string>
+
+    <string-array name="r_tipoUser">
+        <item>-Selecione-</item>
+        <item>PcD</item>
+        <item>Idoso</item>
+        <item>Pai</item>
+        <item>Mãe</item>
+        <item>Parente</item>
+        <item>Professor</item>
+        <item>Estudante</item>
+        <item>Intérprete</item>
+        <item>Enfermeira</item>
+        <item>Assistente Social</item>
+        <item>Psicologo</item>
+        <item>Médico</item>
+        <item>Motorista</item>
+        <item>Atendente</item>
+        <item>Vizinho</item>
+        <item>Guarda</item>
+    </string-array>
+    <string-array name="r_tipoDef">
+        <item>-Selecione-</item>
+        <item>Visual</item>
+        <item>Membros Superiores</item>
+        <item>Membros Inferiores</item>
+        <item>Membros Inferiores e Superiores</item>
+        <item>Auditiva</item>
+    </string-array>
+
+    <string name="title_activity_activity">MainActivity</string>
+    <string name="title_activity_activity_cadastro">ActivityCadastro</string>
+    <string name="title_activity_activity_menu">ActivityMenu</string>
+    <string name="title_activity_activity_mapas">ActivityMapas</string>
+    <string name="title_activity_activity_mapas_rotas">ActivityMapasRotas</string>
+    <string name="title_activity_activity_mapas_recursos">ActivityMapasRecursos</string>
+    
+</resources>

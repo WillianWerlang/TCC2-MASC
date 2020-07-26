@@ -1,0 +1,16 @@
+{"_id": ObjectId("55b27533bb03721a8b000001"),
+ "MascNode": "1",
+ "Position": "dynamic",
+ "WorkTime": "7,19",
+ "WorkWeek": "2,6",
+ "Sensors": {"Types": [{"DHT11": {"sleep": "30"}},
+ 					   {"Proximity": {"sleep": "2"}},
+ 					   {"RFID": {"sleep": "0"}}
+ 					  ]
+ 			},
+ "Data": {"Intervals": [{"Position": {"interval": "20"}},
+ 					    {"Ip": { "interval": "120"}},
+ 					    {"SendData": {"interval": "60"}}
+ 					   ]
+ 		 }
+}																
