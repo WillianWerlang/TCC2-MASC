@@ -6,13 +6,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Google Maps Test</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        #map {
+            height: 100%;
+            width: 100%;
+        }
 
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
 
 <body>
+    <div ng-view style="width:100%; height:100%;"></div>
 
-    <div ng-view></div>
-
+    <script src="jquery-3.5.1.min.js"></script>
     <script src="angular.min.js"></script>
     <script src="angular-route.min.js"></script>
     <script src="app.js"></script>
