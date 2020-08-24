@@ -11,9 +11,9 @@ public class Database {
         connection=null;
         try {
             String user="root";
-            String password="usbw";
-            String url = "jdbc:mysql://localhost:3307/test?serverTimezone=UTC&useLegacyDatetimeCode=false";
-//            String url = "jdbc:mysql://192.168.25.99:3306/test?serverTimezone=UTC&useLegacyDatetimeCode=false";
+            String password="Welcome1";
+            String url = "jdbc:mysql://localhost:3306/dissys?serverTimezone=UTC&useLegacyDatetimeCode=false";
+//            String url = "jdbc:mysql://192.168.25.99:3306/dissys?serverTimezone=UTC&useLegacyDatetimeCode=false";
 //            String user = "user_example";
 //            String password = "123";
             connection = DriverManager.getConnection(url,user,password);
@@ -29,8 +29,8 @@ public class Database {
         connection=null;
         try {
             String user="root";
-            String password="usbw";
-            String url = "jdbc:mysql://localhost:3307/"+base+"?serverTimezone=UTC&useLegacyDatetimeCode=false";
+            String password="Welcome1";
+            String url = "jdbc:mysql://localhost:3306/"+base+"?serverTimezone=UTC&useLegacyDatetimeCode=false";
 //            String url = "jdbc:mysql://192.168.25.99:3306/test?serverTimezone=UTC&useLegacyDatetimeCode=false";
 //            String user = "user_example";
 //            String password = "123";

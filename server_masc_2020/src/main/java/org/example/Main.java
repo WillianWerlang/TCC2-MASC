@@ -17,6 +17,9 @@ import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @EnableAutoConfiguration
@@ -31,21 +34,22 @@ public class Main implements CommandLineRunner{
         SpringApplication.run(Main.class, args);
     }
 
-    @Autowired
-    JdbcTemplate jdbcTemplate;
+    //@Autowired
+    //JdbcTemplate jdbcTemplate;
 
     @Override
     public void run(String... strings) throws Exception {
-        create();
+        //create();
     }
 
     public void create(){
         log.info("Creating DATABASE");
+        System.out.println("I got here...");
         //String sql="Drop DATABASE dissys;";
         Boolean needInsert=true;
         String sql="CREATE DATABASE IF NOT EXISTS dissys;";
         try {
-            jdbcTemplate.execute(sql);
+            //jdbcTemplate.execute(sql);
 
         }
         catch(Exception e) {

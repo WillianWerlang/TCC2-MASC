@@ -7,8 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
+import org.springframework.web.bind.annotation.*;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -30,6 +33,84 @@ public class Controller {
 
     @Autowired
     private UserRepository userRepository;
+    
+    private List<BusRoute> loadBusRoutes() {
+	
+    	List<BusRoute> routes = new ArrayList<BusRoute>();
+    	
+    	try {
+    		comando = "SELECT br.BusRouteID, br.`Order`, p.PositionID, p.BusStopID, p.Lat, p.Longe, bs.AverageFeedback \r\n" + 
+    				"FROM busroute br \r\n" + 
+    				"INNER JOIN position p ON p.PositionID = br.PositionID \r\n" + 
+    				"LEFT JOIN busstop bs ON bs.BusStopID = p.BusStopID\r\n" + 
+    				"ORDER BY br.BusRouteID, br.`Order`;";
+    		
+            con = Database.getConnection("dissys");
+            stmt = con.createStatement();
+            ResultSet r;
+            r = stmt.executeQuery(comando);
+            
+            
+            int currentRouteID = 0;
+            
+            while(r.next()) {
+            	BusStop busStop;
+            	int busRouteID = r.getInt("BusRouteID");
+            	int busStopID = r.getInt("BusStopID");
+            	
+            	        	
+            	if (currentRouteID != busRouteID) {
+            		currentRouteID = busRouteID;
+            		routes.add(new BusRoute(busRouteID));
+            	}
+            	
+            	if (busStopID == 0) {
+            		busStop = null;
+            	} else {
+            		busStop = new BusStop(busStopID, r.getFloat("AverageFeedback"));
+            	}
+            	
+
+            	Position position = new Position(r.getInt("PositionID"), r.getFloat("Lat"), r.getFloat("Longe"), busStop);
+            	routes.get(routes.size()-1).getPositions().add(position);
+            }
+            
+    	} catch (Exception e) {
+            result="no;";
+        }	
+    	
+    	return routes;
+    }
+    
+    private BusRoute calculateBetterBusRoute(float lat, float longe, List<BusRoute> routes) {
+    	BusRoute betterRoute = routes.get(0);
+    	
+    	return betterRoute;
+    }
+    
+    private float calculateDistance (float x1, float x2, float y1, float y2) {
+    	return (float) Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+    }
+    
+
+    
+    @PostMapping("/busStop")
+    public String getBusRoute(@RequestParam float lat, @RequestParam float longe) {
+
+    	List<BusRoute> routes = loadBusRoutes();
+    	BusRoute bestRoute = calculateBetterBusRoute(lat, longe, routes);
+    	ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+    	String json = "";
+    	try {
+    		json = ow.writeValueAsString(bestRoute);
+    	} catch (Exception e) {
+    		return "Error";
+    	}
+    	
+    	return json;
+    }
+    
+    
 
     @PostMapping("/add")
     public String addCustomer(@RequestParam String nome, @RequestParam String email, @RequestParam String senha, @RequestParam String tipoUser, @RequestParam String tipoDef) {
@@ -47,7 +128,7 @@ public class Controller {
     public Iterable<_masc_usuario> getUsers() {
         return userRepository.findAll();
     }
-
+    
     @GetMapping("/listaUsuario")
     public ArrayList<_masc_usuario> listaUsuario() {
         String comando;

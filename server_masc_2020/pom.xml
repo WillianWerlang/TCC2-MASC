@@ -49,7 +49,13 @@
                     <groupId>org.junit.vintage</groupId>
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
-            </exclusions>
+
+    <exclusion>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+    </exclusion>
+</exclusions> 
+ 
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -60,9 +66,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
-
-
-
+        
     </dependencies>
     <build>
         <plugins>

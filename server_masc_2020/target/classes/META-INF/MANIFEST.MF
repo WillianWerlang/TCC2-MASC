@@ -1,30 +1,47 @@
 Manifest-Version: 1.0
+Implementation-Title: server_masc
+Implementation-Version: 1.0-SNAPSHOT
+Built-By: Willian Werlang
+Implementation-Vendor-Id: org.example
+Class-Path: lib/json-simple-1.1.1.jar lib/junit-4.13.jar lib/hamcrest-
+ core-2.2.jar lib/spring-boot-starter-jdbc-2.3.1.RELEASE.jar lib/sprin
+ g-boot-starter-2.3.1.RELEASE.jar lib/spring-boot-2.3.1.RELEASE.jar li
+ b/spring-boot-autoconfigure-2.3.1.RELEASE.jar lib/spring-boot-starter
+ -logging-2.3.1.RELEASE.jar lib/logback-classic-1.2.3.jar lib/logback-
+ core-1.2.3.jar lib/log4j-to-slf4j-2.13.3.jar lib/log4j-api-2.13.3.jar
+  lib/jul-to-slf4j-1.7.30.jar lib/jakarta.annotation-api-1.3.5.jar lib
+ /snakeyaml-1.26.jar lib/HikariCP-3.4.5.jar lib/slf4j-api-1.7.30.jar l
+ ib/spring-jdbc-5.2.7.RELEASE.jar lib/spring-beans-5.2.7.RELEASE.jar l
+ ib/spring-tx-5.2.7.RELEASE.jar lib/spring-boot-starter-web-2.3.1.RELE
+ ASE.jar lib/spring-boot-starter-json-2.3.1.RELEASE.jar lib/jackson-da
+ tabind-2.11.0.jar lib/jackson-annotations-2.11.0.jar lib/jackson-core
+ -2.11.0.jar lib/jackson-datatype-jdk8-2.11.0.jar lib/jackson-datatype
+ -jsr310-2.11.0.jar lib/jackson-module-parameter-names-2.11.0.jar lib/
+ spring-boot-starter-tomcat-2.3.1.RELEASE.jar lib/tomcat-embed-core-9.
+ 0.36.jar lib/jakarta.el-3.0.3.jar lib/tomcat-embed-websocket-9.0.36.j
+ ar lib/spring-web-5.2.7.RELEASE.jar lib/spring-webmvc-5.2.7.RELEASE.j
+ ar lib/spring-aop-5.2.7.RELEASE.jar lib/spring-context-5.2.7.RELEASE.
+ jar lib/spring-expression-5.2.7.RELEASE.jar lib/mysql-connector-java-
+ 8.0.20.jar lib/jakarta.xml.bind-api-2.3.3.jar lib/jakarta.activation-
+ api-1.2.2.jar lib/hamcrest-2.2.jar lib/byte-buddy-1.10.11.jar lib/spr
+ ing-core-5.2.7.RELEASE.jar lib/spring-jcl-5.2.7.RELEASE.jar lib/sprin
+ g-boot-starter-data-jpa-2.3.1.RELEASE.jar lib/spring-boot-starter-aop
+ -2.3.1.RELEASE.jar lib/aspectjweaver-1.9.5.jar lib/jakarta.transactio
+ n-api-1.3.3.jar lib/jakarta.persistence-api-2.2.3.jar lib/hibernate-c
+ ore-5.4.17.Final.jar lib/jboss-logging-3.4.1.Final.jar lib/javassist-
+ 3.24.0-GA.jar lib/antlr-2.7.7.jar lib/jandex-2.1.3.Final.jar lib/clas
+ smate-1.5.1.jar lib/dom4j-2.1.3.jar lib/hibernate-commons-annotations
+ -5.1.0.Final.jar lib/jaxb-runtime-2.3.3.jar lib/txw2-2.3.3.jar lib/is
+ tack-commons-runtime-3.0.11.jar lib/jakarta.activation-1.2.2.jar lib/
+ spring-data-jpa-2.3.1.RELEASE.jar lib/spring-data-commons-2.3.1.RELEA
+ SE.jar lib/spring-orm-5.2.7.RELEASE.jar lib/spring-aspects-5.2.7.RELE
+ ASE.jar lib/spring-boot-starter-thymeleaf-2.3.1.RELEASE.jar lib/thyme
+ leaf-spring5-3.0.11.RELEASE.jar lib/thymeleaf-3.0.11.RELEASE.jar lib/
+ attoparser-2.0.5.RELEASE.jar lib/unbescape-1.1.6.RELEASE.jar lib/thym
+ eleaf-extras-java8time-3.0.4.RELEASE.jar
+Build-Jdk: 1.8.0_261
+Implementation-URL: https://spring.io/projects/spring-boot/server_masc
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
 Main-Class: org.example.Main
-Class-Path: tomcat-embed-core-9.0.36.jar jul-to-slf4j-1.7.30.jar spring-
- boot-starter-json-2.3.1.RELEASE.jar jaxb-runtime-2.3.3.jar spring-web-5
- .2.7.RELEASE.jar jackson-datatype-jsr310-2.11.0.jar spring-boot-starter
- -aop-2.3.1.RELEASE.jar spring-context-5.2.7.RELEASE.jar spring-tx-5.2.7
- .RELEASE.jar logback-core-1.2.3.jar spring-boot-autoconfigure-2.3.1.REL
- EASE.jar mysql-connector-java-8.0.20.jar hibernate-core-5.4.17.Final.ja
- r jakarta.annotation-api-1.3.5.jar jackson-module-parameter-names-2.11.
- 0.jar javassist-3.24.0-GA.jar txw2-2.3.3.jar spring-data-commons-2.3.1.
- RELEASE.jar jboss-logging-3.4.1.Final.jar jandex-2.1.3.Final.jar spring
- -orm-5.2.7.RELEASE.jar tomcat-embed-websocket-9.0.36.jar antlr-2.7.7.ja
- r log4j-to-slf4j-2.13.3.jar jackson-databind-2.11.0.jar spring-boot-sta
- rter-web-2.3.1.RELEASE.jar byte-buddy-1.10.11.jar spring-boot-starter-2
- .3.1.RELEASE.jar spring-webmvc-5.2.7.RELEASE.jar jakarta.activation-1.2
- .2.jar jakarta.xml.bind-api-2.3.3.jar jackson-datatype-jdk8-2.11.0.jar 
- spring-data-jpa-2.3.1.RELEASE.jar dom4j-2.1.3.jar HikariCP-3.4.5.jar sp
- ring-aspects-5.2.7.RELEASE.jar slf4j-api-1.7.30.jar spring-jcl-5.2.7.RE
- LEASE.jar jackson-core-2.11.0.jar spring-boot-starter-logging-2.3.1.REL
- EASE.jar hibernate-commons-annotations-5.1.0.Final.jar spring-jdbc-5.2.
- 7.RELEASE.jar jakarta.el-3.0.3.jar spring-aop-5.2.7.RELEASE.jar spring-
- boot-starter-tomcat-2.3.1.RELEASE.jar spring-core-5.2.7.RELEASE.jar cla
- ssmate-1.5.1.jar spring-expression-5.2.7.RELEASE.jar spring-boot-starte
- r-jdbc-2.3.1.RELEASE.jar jackson-annotations-2.11.0.jar istack-commons-
- runtime-3.0.11.jar log4j-api-2.13.3.jar spring-beans-5.2.7.RELEASE.jar 
- jakarta.transaction-api-1.3.3.jar jakarta.persistence-api-2.2.3.jar spr
- ing-boot-starter-data-jpa-2.3.1.RELEASE.jar spring-boot-2.3.1.RELEASE.j
- ar logback-classic-1.2.3.jar jakarta.activation-api-1.2.2.jar aspectjwe
- aver-1.9.5.jar snakeyaml-1.26.jar
 
