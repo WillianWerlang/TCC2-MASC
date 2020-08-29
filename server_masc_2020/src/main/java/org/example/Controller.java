@@ -106,7 +106,7 @@ public class Controller {
     			}		
     		}  	  
     		
-    		if (betterDistance < betterDistance1 + betterDistance2 || betterDistance == 0) {
+    		if (betterDistance1 + betterDistance2 < betterDistance || betterDistance == 0) {
     			betterDistance = betterDistance1 + betterDistance2;
     			betterRoute = currentRoute;
     		}
@@ -119,20 +119,47 @@ public class Controller {
     	return (float) Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
     }
 
+    private JSONObject parseBusRouteJSON(BusRoute route) {
+    	JSONObject obj = new JSONObject();
+    	
+    	obj.put("ID", route.getID());
+    	obj.put("Positions", parsePositionsJSON(route.getPositions()));
+    	
+    	return obj;
+    }
+    
+    private JSONArray parsePositionsJSON(List<Position> positions) {
+    	JSONArray array = new JSONArray();
+    	
+    	for (int i = 0; i < positions.size(); i++) {
+    		array.add(parsePositionJSON(positions.get(i)));
+    	}
+    	
+    	return array;
+    }
+     
+    private JSONObject parsePositionJSON(Position position) {
+    	JSONObject obj = new JSONObject();
+    	
+    	obj.put("ID", position.getID());
+    	obj.put("Lat", position.getLat());
+    	obj.put("Longe", position.getLonge());
+    	
+    	if (position.getBusStop() != null) {
+    		obj.put("BusStopID", position.getBusStop().getID());
+    		obj.put("BusStopFeedback", position.getBusStop().getAveragefeedback());
+    	}
+    	
+    	return obj;
+    }
+       
+    
     @PostMapping("/busStop")
-    public String getBusRoute(@RequestParam float lat1, @RequestParam float longe1, @RequestParam float lat2, @RequestParam float longe2) {
+    public JSONObject getBusRoute(@RequestParam float lat1, @RequestParam float longe1, @RequestParam float lat2, @RequestParam float longe2) {
 
     	List<BusRoute> routes = loadBusRoutes();
     	BusRoute bestRoute = calculateBetterBusRoute(lat1, longe1, lat2, longe2, routes);
-    	ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-    	String json = "";
-    	try {
-    		json = ow.writeValueAsString(bestRoute);
-    	} catch (Exception e) {
-    		return "Error";
-    	}
-    	
-    	return json;
+    	return parseBusRouteJSON(bestRoute);
     }
     
     
