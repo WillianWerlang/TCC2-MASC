@@ -82,23 +82,48 @@ public class Controller {
     	return routes;
     }
     
-    private BusRoute calculateBetterBusRoute(float lat, float longe, List<BusRoute> routes) {
-    	BusRoute betterRoute = routes.get(0);
+    private BusRoute calculateBetterBusRoute(float lat1, float longe1, float lat2, float longe2, List<BusRoute> routes) {
+    	BusRoute betterRoute = null;
+    	float betterDistance = 0;
+    	
+    	for (int i = 0; i < routes.size(); i++) {
+    		BusRoute currentRoute = routes.get(i);
+    		float betterDistance1 = 0;
+			float betterDistance2 = 0;
+			
+    		for (int j = 0; j < currentRoute.getPositions().size(); j++) {
+    			Position currentPosition = currentRoute.getPositions().get(i);
+    			
+    			float distance1 = calculateDistanceBetweenPoints(lat1, longe1, currentPosition.getLat(), currentPosition.getLonge());
+    			float distance2 = calculateDistanceBetweenPoints(lat2, longe2, currentPosition.getLat(), currentPosition.getLonge());
+  
+    			if (distance1 < betterDistance1 || betterDistance1 == 0) {
+    				betterDistance1 = distance1;
+    			}
+    			
+    			if (distance2 < betterDistance2 || betterDistance2 == 0) {
+    				betterDistance2 = distance2;
+    			}		
+    		}  	  
+    		
+    		if (betterDistance < betterDistance1 + betterDistance2 || betterDistance == 0) {
+    			betterDistance = betterDistance1 + betterDistance2;
+    			betterRoute = currentRoute;
+    		}
+    	}
     	
     	return betterRoute;
     }
     
-    private float calculateDistance (float x1, float x2, float y1, float y2) {
+    private float calculateDistanceBetweenPoints (float x1, float x2, float y1, float y2) {
     	return (float) Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
     }
-    
 
-    
     @PostMapping("/busStop")
-    public String getBusRoute(@RequestParam float lat, @RequestParam float longe) {
+    public String getBusRoute(@RequestParam float lat1, @RequestParam float longe1, @RequestParam float lat2, @RequestParam float longe2) {
 
     	List<BusRoute> routes = loadBusRoutes();
-    	BusRoute bestRoute = calculateBetterBusRoute(lat, longe, routes);
+    	BusRoute bestRoute = calculateBetterBusRoute(lat1, longe1, lat2, longe2, routes);
     	ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
     	String json = "";
     	try {

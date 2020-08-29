@@ -1,12 +1,8 @@
 package org.example;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 public class Position {
 	
-	public Position(int ID, double lat, double longe, BusStop busStop) {
+	public Position(int ID, float lat, float longe, BusStop busStop) {
 		super();
 		this.ID = ID;
 		this.lat = lat;
@@ -15,8 +11,20 @@ public class Position {
 	}
 	
 	private int ID;
-	private double lat;
-	private double longe;
+	private float lat;
+	private float longe;
 	private BusStop busStop;
+	public int getID() {
+		return ID;
+	}
+	public float getLat() {
+		return lat;
+	}
+	public float getLonge() {
+		return longe;
+	}
+	public BusStop getBusStop() {
+		return busStop;
+	}
 	
 }
