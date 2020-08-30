@@ -92,17 +92,21 @@ public class Controller {
 			float betterDistance2 = 0;
 			
     		for (int j = 0; j < currentRoute.getPositions().size(); j++) {
-    			Position currentPosition = currentRoute.getPositions().get(i);
+    			Position currentPosition = currentRoute.getPositions().get(j);
     			
+    			System.out.println("Start");
     			float distance1 = calculateDistanceBetweenPoints(lat1, longe1, currentPosition.getLat(), currentPosition.getLonge());
+    			System.out.println("End");
     			float distance2 = calculateDistanceBetweenPoints(lat2, longe2, currentPosition.getLat(), currentPosition.getLonge());
   
     			if (distance1 < betterDistance1 || betterDistance1 == 0) {
     				betterDistance1 = distance1;
+    				currentRoute.setStart(j);
     			}
     			
     			if (distance2 < betterDistance2 || betterDistance2 == 0) {
     				betterDistance2 = distance2;
+    				currentRoute.setEnd(j);
     			}		
     		}  	  
     		
@@ -115,14 +119,24 @@ public class Controller {
     	return betterRoute;
     }
     
-    private float calculateDistanceBetweenPoints (float x1, float x2, float y1, float y2) {
-    	return (float) Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+    private float calculateDistanceBetweenPoints (float lat1, float longe1, float lat2, float longe2) {
+    	
+    	float result = (float) Math.sqrt((longe2 - longe1) * (longe2 - longe1) + (lat2 - lat1) * (lat2 - lat1));
+
+    	
+    	System.out.println(lat1 + ", " + longe1);
+    	System.out.println(lat2 + ", " + longe2);
+    	System.out.println("Result: " + result);
+    	
+    	return result;
     }
 
     private JSONObject parseBusRouteJSON(BusRoute route) {
     	JSONObject obj = new JSONObject();
     	
     	obj.put("ID", route.getID());
+    	obj.put("Start", route.getStart());
+    	obj.put("End", route.getEnd());
     	obj.put("Positions", parsePositionsJSON(route.getPositions()));
     	
     	return obj;
@@ -142,8 +156,8 @@ public class Controller {
     	JSONObject obj = new JSONObject();
     	
     	obj.put("ID", position.getID());
-    	obj.put("Lat", position.getLat());
-    	obj.put("Longe", position.getLonge());
+    	obj.put("lat", position.getLat());
+    	obj.put("lng", position.getLonge());
     	
     	if (position.getBusStop() != null) {
     		obj.put("BusStopID", position.getBusStop().getID());
@@ -154,7 +168,7 @@ public class Controller {
     }
        
     
-    @PostMapping("/busStop")
+    @GetMapping("/busStop")
     public JSONObject getBusRoute(@RequestParam float lat1, @RequestParam float longe1, @RequestParam float lat2, @RequestParam float longe2) {
 
     	List<BusRoute> routes = loadBusRoutes();

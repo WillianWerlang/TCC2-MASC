@@ -10,10 +10,13 @@ public class BusRoute {
 		super();
 		ID = iD;
 		this.positions = new ArrayList<Position>();
+		
 	}
 	
 	private int ID;
 	private List<Position> positions;
+	private int start;
+	private int end;
 	
 	public int getID() {
 		return ID;
@@ -29,6 +32,22 @@ public class BusRoute {
 	
 	public void setPositions(List<Position> positions) {
 		this.positions = positions;
+	}
+
+	public int getStart() {
+		return start;
+	}
+
+	public void setStart(int start) {
+		this.start = start;
+	}
+
+	public int getEnd() {
+		return end;
+	}
+
+	public void setEnd(int end) {
+		this.end = end;
 	}
 	
 }

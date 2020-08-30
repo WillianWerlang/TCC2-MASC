@@ -1,0 +1,20 @@
+html, body {
+    height: 100%;
+    padding: 2px;
+}
+
+#map {
+    margin-top: 4px;
+    height: 60%;
+    width: 100%;
+}
+
+#footer {
+    height: 60%;
+    width: 100%;
+}
+
+#footer > .btn {
+    margin-top: 4px;
+    width: 100%;
+}
