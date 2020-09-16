@@ -122,11 +122,6 @@ public class Controller {
     private float calculateDistanceBetweenPoints (float lat1, float longe1, float lat2, float longe2) {
     	
     	float result = (float) Math.sqrt((longe2 - longe1) * (longe2 - longe1) + (lat2 - lat1) * (lat2 - lat1));
-
-    	
-    	System.out.println(lat1 + ", " + longe1);
-    	System.out.println(lat2 + ", " + longe2);
-    	System.out.println("Result: " + result);
     	
     	return result;
     }
