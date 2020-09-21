@@ -14,8 +14,16 @@ public class BusStop {
 	public int getID() {
 		return ID;
 	}
+	
 	public double getAveragefeedback() {
 		return averagefeedback;
 	}
 	
+	public void setID(int iD) {
+		ID = iD;
+	}
+	
+	public void setAveragefeedback(double averagefeedback) {
+		this.averagefeedback = averagefeedback;
+	}	
 }

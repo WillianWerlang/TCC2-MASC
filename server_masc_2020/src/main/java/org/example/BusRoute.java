@@ -1,22 +1,21 @@
 package org.example;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BusRoute {
 	
-	public BusRoute(int iD) {
+	public BusRoute(int iD, String name) {
 		super();
-		ID = iD;
+		this.ID = iD;
+		this.Name = name;
 		this.positions = new ArrayList<Position>();
 		
 	}
 	
 	private int ID;
+	private String Name;
 	private List<Position> positions;
-	private int start;
-	private int end;
 	
 	public int getID() {
 		return ID;
@@ -34,20 +33,11 @@ public class BusRoute {
 		this.positions = positions;
 	}
 
-	public int getStart() {
-		return start;
+	public String getName() {
+		return Name;
 	}
 
-	public void setStart(int start) {
-		this.start = start;
-	}
-
-	public int getEnd() {
-		return end;
-	}
-
-	public void setEnd(int end) {
-		this.end = end;
-	}
-	
+	public void setName(String name) {
+		Name = name;
+	} 	
 }

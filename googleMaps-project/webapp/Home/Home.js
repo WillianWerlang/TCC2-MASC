@@ -4,6 +4,7 @@ let map;
 let marker1;
 let marker2;
 let flightPath;
+let routes;
 
 angular.module('myApp.Home', ['ngRoute'])
     .controller('HomeController', function ($scope, $http) {   
@@ -14,6 +15,7 @@ angular.module('myApp.Home', ['ngRoute'])
         }
     
         initMap(origin, $http);
+        callAllRoutes($http);
 
         $scope.selectDestination = function() {
             map.addListener('click', function(e) {
@@ -27,34 +29,10 @@ angular.module('myApp.Home', ['ngRoute'])
                     lng: e.latLng.lng()
                 }
 
-                showRoute(origin, destination, $http);
+                callBusRouteInformation(origin, destination, 0, $http);
               });
         }
     });
-
-
-function clearMap() {
-    google.maps.event.clearInstanceListeners(map);
-
-    if (typeof marker2 !== 'undefined') {
-        marker2.setMap(null);
-    }
-
-    if (typeof flightPath !== 'undefined') {
-        flightPath.setMap(null);
-    }
-}
-
-function showRoute (origin, destination, $http) {
-
-    marker2 = new google.maps.Marker({
-        position: destination, 
-        map: map,
-        label: "C"
-    });
-
-    callBusRoute(origin, destination, $http);
-}    
 
 function initMap(origin, $http) {
 
@@ -68,24 +46,66 @@ function initMap(origin, $http) {
         map: map,
         label: "P"
     });
+}    
+
+function clearMap() {
+    google.maps.event.clearInstanceListeners(map);
+
+    if (typeof marker2 !== 'undefined') {
+        marker2.setMap(null);
+    }
+
+    if (typeof flightPath !== 'undefined') {
+        flightPath.setMap(null);
+    }
 }
 
-function callBusRoute(origin, destination, $http) {
-    $http.get('http://localhost:8080/busStop?lat1='+origin.lat+'&longe1='+origin.lng+'&lat2='+destination.lat+'&longe2='+destination.lng)
+function callAllRoutes($http) {
+    $http.get('http://localhost:8080/allBusRoutes')
     .then(function successCallback(response) {
-
-          flightPath = new google.maps.Polyline({
-            path: formatRoute(response.data.Positions, response.data.Start, response.data.End),
-            geodesic: true,
-            strokeColor: "#FF0000",
-            strokeOpacity: 1.0,
-            strokeWeight: 2
-          });
-
-          flightPath.setMap(map);
-
-    }, function errorCallback(response) {
+        routes = response.data;
     });
+}
+
+function callBusRouteInformation(origin, destination, busRouteID, $http) {
+    $http.get('http://localhost:8080/busRouteDistance?lat1=' + origin.lat + '&lng1=' + origin.lng + '&lat2=' + destination.lat + '&lng2=' + destination.lng + '&routeID=' + busRouteID)
+    .then(function successCallback(response) {
+          showRoute(origin, destination, response.data, $http);
+    });
+}
+
+function showRoute(origin, destination, routeInformation, $http) {
+
+    var route = retrieveRoute(routeInformation.BusRouteID); 
+    var routePositions = formatRoute(route.Positions, routeInformation.Start, routeInformation.End);
+
+    showRouteInMap(routePositions);
+
+    marker2 = new google.maps.Marker({
+        position: destination, 
+        map: map,
+        label: "C"
+    }); 
+}    
+
+function retrieveRoute(ID) {
+    for (var i = 0; i < routes.length; i++) {
+        if (routes[i].BusRouteID == ID) {
+            return routes[i];
+        }
+    }
+}
+
+function showRouteInMap(positions) {
+    flightPath = new google.maps.Polyline({
+        path: positions,
+        geodesic: true,
+        strokeColor: "#FF0000",
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+      });
+
+      flightPath.setMap(map);
 }
 
 function formatRoute(positions, start, end) {
@@ -107,4 +127,3 @@ function formatRoute(positions, start, end) {
 
     return result;
 }
-

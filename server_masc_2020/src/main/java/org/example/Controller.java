@@ -7,10 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-
 import org.springframework.web.bind.annotation.*;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -34,104 +30,151 @@ public class Controller {
     @Autowired
     private UserRepository userRepository;
     
-    private List<BusRoute> loadBusRoutes() {
+    
+    // Services 
+    
+    @GetMapping("/allBusRoutes")
+    public JSONArray getAllRoutes() {
+    	List<BusRoute> routes = loadBusRoutes(0);
+    	return parseBusRoutesJSON(routes);
+    }
+    
+    @GetMapping("/busRouteDistance")
+    public JSONObject getBusRouteDistance(@RequestParam float lat1, @RequestParam float lng1, @RequestParam float lat2, @RequestParam float lng2, @RequestParam int routeID) {
+
+    	List<BusRoute> routes = loadBusRoutes(routeID);
+    	RouteInformation routeInfo = calculateBetterBusRoute(lat1, lng1, lat2, lng2, routes);
+    	return parseRouteInformationJSON(routeInfo);
+    }   
+      
+    
+    // Logic
+    
+    private List<BusRoute> loadBusRoutes(int busID) {
 	
-    	List<BusRoute> routes = new ArrayList<BusRoute>();
+    	List<BusRoute> routeList = new ArrayList<BusRoute>();
     	
     	try {
-    		comando = "SELECT br.BusRouteID, br.`Order`, p.PositionID, p.BusStopID, p.Lat, p.Longe, bs.AverageFeedback \r\n" + 
-    				"FROM busroute br \r\n" + 
-    				"INNER JOIN position p ON p.PositionID = br.PositionID \r\n" + 
-    				"LEFT JOIN busstop bs ON bs.BusStopID = p.BusStopID\r\n" + 
-    				"ORDER BY br.BusRouteID, br.`Order`;";
+    		
+    		if (busID == 0) {
+    			comando = "SELECT * FROM `busroute` br;";
+    		} else {
+    			comando = "SELECT * FROM `busroute` br WHERE br.BusRouteID = " + busID + ";";
+    		}
+    		
     		
             con = Database.getConnection("dissys");
             stmt = con.createStatement();
-            ResultSet r;
             r = stmt.executeQuery(comando);
-            
-            
-            int currentRouteID = 0;
-            
-            while(r.next()) {
-            	BusStop busStop;
-            	int busRouteID = r.getInt("BusRouteID");
-            	int busStopID = r.getInt("BusStopID");
-            	
-            	        	
-            	if (currentRouteID != busRouteID) {
-            		currentRouteID = busRouteID;
-            		routes.add(new BusRoute(busRouteID));
-            	}
-            	
-            	if (busStopID == 0) {
-            		busStop = null;
-            	} else {
-            		busStop = new BusStop(busStopID, r.getFloat("AverageFeedback"));
-            	}
-            	
-
-            	Position position = new Position(r.getInt("PositionID"), r.getFloat("Lat"), r.getFloat("Longe"), busStop);
-            	routes.get(routes.size()-1).getPositions().add(position);
+                                
+            while(r.next()) {			
+            	routeList.add(new BusRoute(r.getInt("BusRouteID"), r.getString("BusRouteName")));      	
             }
             
+            for (int i = 0; i < routeList.size(); i++) {
+            	BusRoute route = routeList.get(i);
+            	
+            	comando = "SELECT brp.Order, p.PositionID, p.Lat, p.Lng, bs.BusStopID, bs.AverageFeedback FROM `BusRoutePosition` brp\r\n" + 
+            			"INNER JOIN `Position` p ON p.PositionID = brp.PositionID LEFT JOIN `BusStop` bs ON bs.BusStopID = p.BusStopID\r\n" + 
+            			"WHERE brp.BusRouteID = " + route.getID() + " ORDER BY brp.Order;";
+            	
+                r = stmt.executeQuery(comando);
+                
+                while(r.next()) {		
+                	BusStop busStop = null;
+                	int busStopID = r.getInt("BusStopID");
+                	if (busStopID != 0) {
+                		busStop = new BusStop(busStopID, r.getDouble("AverageFeedback"));
+                	}
+                	
+                	Position position = new Position(r.getInt("PositionID"), r.getFloat("Lat"), r.getFloat("Lng"), busStop);
+                	route.getPositions().add(position);
+                }
+            }
+                                 
     	} catch (Exception e) {
             result="no;";
         }	
     	
-    	return routes;
+    	return routeList;
     }
+      
+  
     
-    private BusRoute calculateBetterBusRoute(float lat1, float longe1, float lat2, float longe2, List<BusRoute> routes) {
+    private RouteInformation calculateBetterBusRoute(float lat1, float longe1, float lat2, float longe2, List<BusRoute> routes) {
+    	RouteInformation betterRouteInfo = new RouteInformation();
     	BusRoute betterRoute = null;
     	float betterDistance = 0;
     	
     	for (int i = 0; i < routes.size(); i++) {
     		BusRoute currentRoute = routes.get(i);
+    		RouteInformation currentRouteInfo = new RouteInformation();
+    		
     		float betterDistance1 = 0;
 			float betterDistance2 = 0;
 			
     		for (int j = 0; j < currentRoute.getPositions().size(); j++) {
     			Position currentPosition = currentRoute.getPositions().get(j);
-    			
-    			System.out.println("Start");
-    			float distance1 = calculateDistanceBetweenPoints(lat1, longe1, currentPosition.getLat(), currentPosition.getLonge());
-    			System.out.println("End");
-    			float distance2 = calculateDistanceBetweenPoints(lat2, longe2, currentPosition.getLat(), currentPosition.getLonge());
+    			float distance1 = calculateDistanceBetweenPoints(lat1, longe1, currentPosition.getLat(), currentPosition.getLng());
+    			float distance2 = calculateDistanceBetweenPoints(lat2, longe2, currentPosition.getLat(), currentPosition.getLng());
   
     			if (distance1 < betterDistance1 || betterDistance1 == 0) {
     				betterDistance1 = distance1;
-    				currentRoute.setStart(j);
+    				currentRouteInfo.setStart(j);
     			}
     			
     			if (distance2 < betterDistance2 || betterDistance2 == 0) {
     				betterDistance2 = distance2;
-    				currentRoute.setEnd(j);
+    				currentRouteInfo.setEnd(j);
     			}		
     		}  	  
     		
     		if (betterDistance1 + betterDistance2 < betterDistance || betterDistance == 0) {
     			betterDistance = betterDistance1 + betterDistance2;
     			betterRoute = currentRoute;
+    			betterRouteInfo = currentRouteInfo;
     		}
     	}
     	
-    	return betterRoute;
+    	betterRouteInfo.setDistance(betterDistance);
+    	betterRouteInfo.setBusRouteID(betterRoute.getID());
+    	return betterRouteInfo;
     }
     
-    private float calculateDistanceBetweenPoints (float lat1, float longe1, float lat2, float longe2) {
-    	
-    	float result = (float) Math.sqrt((longe2 - longe1) * (longe2 - longe1) + (lat2 - lat1) * (lat2 - lat1));
-    	
+    private float calculateDistanceBetweenPoints (float lat1, float lng1, float lat2, float lng2) {
+    	float result = (float) Math.sqrt((lng2 - lng1) * (lng2 - lng1) + (lat2 - lat1) * (lat2 - lat1));
     	return result;
     }
 
+ 
+    // Parse
+    
+	private JSONObject parseRouteInformationJSON(RouteInformation routeInfo) {
+    	JSONObject obj = new JSONObject();
+    	
+    	obj.put("BusRouteID", routeInfo.getBusRouteID());
+    	obj.put("Start", routeInfo.getStart());
+    	obj.put("End", routeInfo.getEnd());
+    	obj.put("Distance", routeInfo.getDistance());
+    	
+    	return obj;
+    }
+    
+    private JSONArray parseBusRoutesJSON(List<BusRoute> busRoute) {
+    	JSONArray array = new JSONArray();
+    	
+    	for (int i = 0; i < busRoute.size(); i++) {
+    		array.add(parseBusRouteJSON(busRoute.get(i)));
+    	}
+    	
+    	return array;
+    }
+    
     private JSONObject parseBusRouteJSON(BusRoute route) {
     	JSONObject obj = new JSONObject();
     	
-    	obj.put("ID", route.getID());
-    	obj.put("Start", route.getStart());
-    	obj.put("End", route.getEnd());
+    	obj.put("BusRouteID", route.getID());
+    	obj.put("BusRouteName", route.getName());
     	obj.put("Positions", parsePositionsJSON(route.getPositions()));
     	
     	return obj;
@@ -152,7 +195,7 @@ public class Controller {
     	
     	obj.put("ID", position.getID());
     	obj.put("lat", position.getLat());
-    	obj.put("lng", position.getLonge());
+    	obj.put("lng", position.getLng());
     	
     	if (position.getBusStop() != null) {
     		obj.put("BusStopID", position.getBusStop().getID());
@@ -163,16 +206,8 @@ public class Controller {
     }
        
     
-    @GetMapping("/busStop")
-    public JSONObject getBusRoute(@RequestParam float lat1, @RequestParam float longe1, @RequestParam float lat2, @RequestParam float longe2) {
-
-    	List<BusRoute> routes = loadBusRoutes();
-    	BusRoute bestRoute = calculateBetterBusRoute(lat1, longe1, lat2, longe2, routes);
-    	return parseBusRouteJSON(bestRoute);
-    }
+    // Standard MASC
     
-    
-
     @PostMapping("/add")
     public String addCustomer(@RequestParam String nome, @RequestParam String email, @RequestParam String senha, @RequestParam String tipoUser, @RequestParam String tipoDef) {
         _masc_usuario user = new _masc_usuario();
