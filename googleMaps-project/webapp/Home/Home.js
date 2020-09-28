@@ -7,17 +7,37 @@ let linePath;
 
 angular.module('myApp.Home', ['ngRoute'])
     .controller('HomeController', function ($scope, $http) {
-
+        $scope.scheduleIsSelected = false;
         $scope.selectDestination = function () {
             map.addListener('click', function (e) {
+
+                var myEl = angular.element( document.querySelector('#selectedRoute'));
+                myEl.addClass('alert-info');
+                myEl.removeClass('alert-success');
+
                 $scope.destination = {
                     lat: e.latLng.lat(),
                     lng: e.latLng.lng()
                 }
-
+                $scope.currentRouteID = 0;
                 $scope.clearMap();
                 $scope.callBusRouteInformation();
             });
+        }
+
+        $scope.selectSchedule = function (scheduleID) {
+            var myEl;
+            for (var i = 0; i < $scope.currentSchedules.length; i++) {
+                myEl = angular.element(document.querySelector('#scheduleSelectedID'+$scope.currentSchedules[i].ScheduleID));
+                myEl.removeClass('active');
+            }
+
+            myEl = angular.element(document.querySelector('#scheduleSelectedID'+scheduleID));
+            myEl.addClass('active');
+
+            
+            $scope.currentSchedule = $scope.retrieveScheduleByID(scheduleID);
+            
         }
 
         $scope.nextRoute = function () {
@@ -27,7 +47,11 @@ angular.module('myApp.Home', ['ngRoute'])
         }
 
         $scope.chooseRoute = function () {
-
+            $scope.routeIsSelected = true;
+            var myEl = angular.element( document.querySelector('#selectedRoute'));
+            myEl.addClass('alert-success');
+            myEl.removeClass('alert-info');
+            $scope.currentSchedules = $scope.retrievePossibleSchedules($scope.currentRouteID);
         }
 
         $scope.initMap = function () {
@@ -102,6 +126,26 @@ angular.module('myApp.Home', ['ngRoute'])
             }
         }
 
+        $scope.retrievePossibleSchedules = function (busRouteID) {
+            var schedules = [];
+
+            for (var i = 0; i < $scope.schedules.length; i++) {
+                if ($scope.schedules[i].BusRouteID == busRouteID) {
+                    schedules.push($scope.schedules[i]);
+                }
+            }
+
+            return schedules;
+        }
+
+        $scope.retrieveScheduleByID = function (scheduleID) {
+            for (var i = 0; i < $scope.schedules.length; i++) {
+                if ($scope.schedules[i].ScheduleID == scheduleID){
+                    return $scope.schedules[i];
+                }
+            }
+        }
+
         $scope.formatRoute = function (positions, start, end) {
             var result = [];
 
@@ -122,10 +166,18 @@ angular.module('myApp.Home', ['ngRoute'])
             return result;
         }
 
+        $scope.callAllSchedules = function () {
+            $http.get('http://localhost:8080/allBusSchedules')
+                .then(function successCallback(response) {
+                    $scope.schedules = response.data;
+                });
+        }
+
         $scope.callAllRoutes = function () {
             $http.get('http://localhost:8080/allBusRoutes')
                 .then(function successCallback(response) {
                     $scope.routes = response.data;
+                    $scope.callAllSchedules();
                 });
         }
 
@@ -143,5 +195,6 @@ angular.module('myApp.Home', ['ngRoute'])
         
         $scope.currentRouteID = 0;
         $scope.initMap(origin);
-        $scope.callAllRoutes($http);
+        $scope.callAllRoutes();
+        
     });

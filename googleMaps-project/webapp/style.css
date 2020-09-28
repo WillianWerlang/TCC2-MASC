@@ -5,16 +5,26 @@ html, body {
 
 #map {
     margin-top: 4px;
-    height: 60%;
+    height: 50%;
     width: 100%;
 }
 
-#footer {
-    height: 60%;
-    width: 100%;
-}
-
-#footer > .btn {
+#selectDestinationBtn{
     margin-top: 4px;
     width: 100%;
+    display: block;
+}
+
+#nextRouteBtn {
+    margin-top: 2px;
+    width: 40%;
+}
+
+#chooseRouteBtn {
+    margin-top: 2px;
+    width: 58%;
+}
+
+#selectedRoute {
+    margin-top: 2px;
 }

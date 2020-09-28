@@ -1,8 +1,28 @@
 <div id="map"></div>
 
 <div id="footer">
-  <button ng-click="selectDestination()" type="button" class="btn btn-primary">Selecionar Destino</button>
-  <button ng-click="nextRoute()" type="button" class="btn btn-warning">Próxima Rota</button>
-  <button ng-click="chooseRoute()" type="button" class="btn btn-info">Escolher Rota</button>
-  <span>Rota Selecionada: {{ currentRouteDescription }}</span>
+  <button id="selectDestinationBtn" ng-click="selectDestination()" type="button" class="btn btn-primary">Selecionar Destino</button>
+  <button id="nextRouteBtn" ng-click="nextRoute()" type="button" class="btn btn-warning">Próxima Rota</button>
+  <button id="chooseRouteBtn" ng-click="chooseRoute()" type="button" class="btn btn-info">Escolher Rota</button>
+  <div id="selectedRoute" class="alert alert-info">
+    Rota Selecionada: <strong>{{ currentRouteDescription }}</strong>
+  </div>
+</div>
+
+
+<div ng-show="routeIsSelected" id="schedules" class="row">
+  <div class="col-4">
+    <div class="list-group" role="tablist">
+      <button ng-attr-id="scheduleSelectedID{{s.ScheduleID}}" ng-repeat="s in currentSchedules" class="list-group-item list-group-item-action" ng-click="selectSchedule(s.ScheduleID)" role="tab">{{s.ScheduleID}}</button>
+    </div>
+  </div>
+  <div class="col-8">
+    <div class="tab-content" id="nav-tabContent">
+      <a class="list-group-item list-group-item-action">Número do Ônibus: {{ currentSchedule.Bus.BusID }}</a>
+      <a class="list-group-item list-group-item-action">Motorista: {{ currentSchedule.Bus.Driver }}</a>
+      <a class="list-group-item list-group-item-action">Avaliação do Automovel: {{ currentSchedule.Bus.AverageFeedback }}</a>
+      <a class="list-group-item list-group-item-action">Assentos: {{ currentSchedule.Bus.Seats }}</a>
+      <div ng-repeat="t in currentSchedule.Times" class="tab-pane fade show active" role="tabpanel">{{t.Time}}</div>
+    </div>
+  </div>
 </div>

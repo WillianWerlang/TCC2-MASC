@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,8 @@ public class Controller {
     @GetMapping("/allBusRoutes")
     public JSONArray getAllRoutes() {
     	List<BusRoute> routes = loadBusRoutes(0);
-    	return parseBusRoutesJSON(routes);
+    	JSONArray array = parseBusRoutesJSON(routes);
+    	return array;
     }
     
     @GetMapping("/busRouteDistance")
@@ -47,8 +49,85 @@ public class Controller {
     	return parseRouteInformationJSON(routeInfo);
     }   
       
+    @GetMapping("/allBusSchedules")
+    public JSONArray getAllSchedules() {
+    	List<Schedule> scheduleList = loadSchedules();
+    	return parseSchedulesJSON(scheduleList);
+    }
     
+    @GetMapping("/getUsedSeats")
+    public int getUsedSeats(@RequestParam int BusID) {
+    	try {
+    		comando = "SELECT UsedSeats FROM `bus` WHERE BusID = " + BusID + ";";
+        	
+        	con = Database.getConnection("dissys");
+            stmt = con.createStatement();
+            r = stmt.executeQuery(comando);
+            
+            while(r.next()) {
+            	return r.getInt("UsedSeats");
+            }
+            
+    	} catch (Exception e) {
+    		result="no;";
+    	} finally {
+    		return 0;
+    	}
+    }
+      
     // Logic
+    
+    private List<Schedule> loadSchedules() {
+    	
+    	List<Schedule> scheduleList = new ArrayList<Schedule>();
+    	
+    	
+    	try {
+    		comando = "SELECT s.*, brp.BusRouteID,  b.BusID, b.Seats, b.Driver, b.AverageFeedback FROM `schedule` s \r\n" + 
+    				"INNER JOIN `BusRoutePosition` brp ON brp.BusRoutePositionID = s.BusRoutePositionID\r\n" + 
+    				"INNER JOIN `bus` b ON b.BusID = s.BusID\r\n" + 
+    				"ORDER BY s.ScheduleID, S.BusRoutePositionID;";
+        	
+        	con = Database.getConnection("dissys");
+            stmt = con.createStatement();
+            r = stmt.executeQuery(comando);
+            
+            int currentScheduleID = 0;
+            Schedule schedule = new Schedule();
+            
+            while(r.next()) {
+            	boolean newSchedule = false;         	
+            	int scheduleID = r.getInt("ScheduleID");
+            	
+            	if (currentScheduleID == 0 || currentScheduleID != scheduleID) {
+            		
+            		newSchedule = true;
+            		currentScheduleID = scheduleID;
+            		          		
+            		Bus bus = new Bus();	
+                	bus.setBusID(r.getInt("BusID"));
+                	bus.setAverageFeedback(r.getFloat("AverageFeedback"));
+                	bus.setDriver(r.getString("Driver"));
+                	bus.setTotalSeats(r.getInt("Seats"));
+                	schedule = new Schedule();  
+                	schedule.setBus(bus);
+                	schedule.setScheduleID(r.getInt("ScheduleID"));    
+                	schedule.setBusRoute(r.getInt("BusRouteID"));
+                	schedule.setTime(new ArrayList<Timestamp>());
+            	} 
+            	
+            	schedule.getTime().add(r.getTimestamp("Time"));
+            	
+            	if (newSchedule) {
+            		scheduleList.add(schedule);
+            	}
+            }
+    	} catch (Exception e) {
+            result="no;";
+        }	
+    	
+    	return scheduleList;
+    }
     
     private List<BusRoute> loadBusRoutes(int busID) {
 	
@@ -98,9 +177,7 @@ public class Controller {
     	
     	return routeList;
     }
-      
-  
-    
+         
     private RouteInformation calculateBetterBusRoute(float lat1, float longe1, float lat2, float longe2, List<BusRoute> routes) {
     	RouteInformation betterRouteInfo = new RouteInformation();
     	BusRoute betterRoute = null;
@@ -148,6 +225,56 @@ public class Controller {
 
  
     // Parse
+    
+    private JSONArray parseSchedulesJSON(List<Schedule> scheduleList) {
+    	JSONArray array = new JSONArray();
+    	
+    	for (int i = 0; i < scheduleList.size(); i++) {
+			array.add(parseScheduleJSON(scheduleList.get(i)));
+		}
+    	
+    	return array;
+    }
+    
+    private JSONObject parseScheduleJSON(Schedule schedule) {
+    	JSONObject obj = new JSONObject();
+    	
+    	obj.put("ScheduleID", schedule.getScheduleID());
+    	obj.put("Bus", parseBusJSON(schedule.getBus()));
+    	obj.put("BusRouteID", schedule.getBusRoute());
+    	obj.put("Times", parseTimestampsJSON(schedule.getTime()));
+    	
+    	return obj;
+    }
+    
+    private JSONArray parseTimestampsJSON(List<Timestamp> times) {
+    	JSONArray array = new JSONArray();
+    	
+    	for (int i = 0; i < times.size(); i++) {
+			array.add(parseTimestampJSON(times.get(i)));
+		}
+    	
+    	return array;
+    }
+    
+    private JSONObject parseTimestampJSON(Timestamp time) {
+    	JSONObject obj = new JSONObject();
+    	
+    	obj.put("Time", time.toString());
+    	
+    	return obj;
+    }
+    
+    private JSONObject parseBusJSON(Bus bus) {
+    	JSONObject obj = new JSONObject();
+    	
+    	obj.put("BusID", bus.getBusID());
+    	obj.put("AverageFeedback", bus.getAverageFeedback());
+    	obj.put("Driver", bus.getDriver());
+    	obj.put("Seats", bus.getTotalSeats());
+    	
+    	return obj;
+    }
     
 	private JSONObject parseRouteInformationJSON(RouteInformation routeInfo) {
     	JSONObject obj = new JSONObject();
